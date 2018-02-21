@@ -33,8 +33,7 @@
 
 <style scoped lang="scss">
   @import "../sass/base";
-  $navbar-background-color: $secondary;
-  $navbar-hover-background-color: $tertiary;
+  $navbar-background-color: $primary;
   @import '~bulma';
 
 </style>
