@@ -27,7 +27,7 @@
 <script>
   export default {
     name: "navbar",
-    props: ['loggedIn']
+    props: ['loggedIn'],
   }
 </script>
 
