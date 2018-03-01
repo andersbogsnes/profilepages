@@ -34,11 +34,16 @@
 
 <script>
   import Question from './Question';
+  import axios from 'axios';
 
   export default {
     components: {
       question: Question,
     },
+    mounted() {
+      this.loadData();
+    },
+
     data() {
       return {
         questionNr: 0,
@@ -76,7 +81,6 @@
       },
 
       submit() {
-
         let responses = this.questions.map((e, i) => {
           return {
             "questionNr": i,
@@ -85,6 +89,20 @@
         });
 
         console.log(responses)
+      },
+      loadData() {
+        axios.get('http://localhost:5000/questions').then((response) => {
+          this.questions = response.data.map((e) => {
+            return {
+              id: e.id,
+              questionText: e.text,
+              questionScore: undefined
+            }
+          })
+          }
+        ).catch((error) => {
+          console.log(error)
+        })
       }
     }
   }

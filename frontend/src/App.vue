@@ -3,9 +3,7 @@
     <nav-bar :logged-in="loggedIn"/>
     <hero />
     <section class="section">
-      <start v-if="!started" @start="started = !started"/>
-      <questions v-else/>
-
+      <router-view />
   </section>
   </div>
 </template>
@@ -13,16 +11,13 @@
 <script>
   import Navbar from './components/Navbar';
   import Hero from './components/Hero';
-  import Start from './components/Start';
-  import Questions from './components/Questions';
+
 
 export default {
   name: 'app',
   components: {
     'NavBar': Navbar,
     'Hero': Hero,
-    'Start': Start,
-    'Questions': Questions
   },
   data () {
     return {

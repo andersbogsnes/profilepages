@@ -1,19 +1,14 @@
 <template>
 <section class="section">
     <div class="container">
-      <a class="button is-large" @click="startQuiz">Start!</a>
+      <router-link class="button is-large" to="/login">Start!</router-link>
     </div>
 </section>
 </template>
 
 <script>
   export default {
-    name: 'start',
-    methods: {
-      startQuiz: function () {
-        this.$emit('start')
-      }
-    },
+    name: 'start'
   }
 </script>
 <style scoped lang="scss">

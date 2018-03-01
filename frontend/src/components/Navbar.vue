@@ -3,12 +3,14 @@
     <div class="navbar-brand">
       <a href="#" class="navbar-item">
         <figure class="image is-64x64">
-          <img src="../assets/logo.png">
+          <router-link to="/">
+            <img src="../assets/logo.png">
+          </router-link>
         </figure>
       </a>
     </div>
   <div class="navbar-start">
-    <a class="navbar-item">
+    <a class="navbar-item" href="/">
       Home
     </a>
   </div>

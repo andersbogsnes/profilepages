@@ -6,3 +6,4 @@ __pycache__
 js/*
 .env
 /backend/static/
+*.xlsx*
