@@ -2,7 +2,9 @@
   <nav class="navbar" role="navigation">
     <div class="navbar-brand">
       <a href="#" class="navbar-item">
-        <img src="../assets/logo.png">
+        <figure class="image is-64x64">
+          <img src="../assets/logo.png">
+        </figure>
       </a>
     </div>
   <div class="navbar-start">
@@ -33,7 +35,9 @@
 
 <style scoped lang="scss">
   @import "../sass/base";
-  $navbar-background-color: $primary;
+  $navbar-background-color: $secondary;
+  $navbar-item-color: $white;
+  $navbar-item-img-max-height: 64px;
   @import '~bulma';
 
 </style>
