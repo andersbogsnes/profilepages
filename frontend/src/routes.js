@@ -3,6 +3,7 @@ import Router from 'vue-router';
 import Questions from './components/Questions';
 import Start from './components/Start';
 import Login from './components/Login';
+import Signup from './components/Signup';
 
 Vue.use(Router);
 
@@ -22,6 +23,11 @@ export default new Router({
       path: '/questions',
       name: 'Questions',
       component: Questions
+    },
+    {
+      path:'/signup',
+      name: 'Signup',
+      component: Signup
     }
   ]
 })

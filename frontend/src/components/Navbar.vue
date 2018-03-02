@@ -10,15 +10,15 @@
       </a>
     </div>
   <div class="navbar-start">
-    <a class="navbar-item" href="/">
+    <router-link class="navbar-item" to="/">
       Home
-    </a>
+    </router-link>
   </div>
   <div class="navbar-end">
-    <a class="navbar-item" v-if="!loggedIn">
+    <router-link class="navbar-item" v-if="!loggedIn" to="/login">
       Login
-    </a>
-    <a class="navbar-item" v-if="loggedIn">
+    </router-link>
+    <a class="navbar-item" v-if="loggedIn" @click="logOut">
       Logout
     </a>
     <a class="navbar-item" v-if="loggedIn">
@@ -32,6 +32,12 @@
   export default {
     name: "navbar",
     props: ['loggedIn'],
+    methods: {
+      logOut() {
+        this.$emit('loggedOut');
+        this.$router.push('/');
+      }
+    }
   }
 </script>
 

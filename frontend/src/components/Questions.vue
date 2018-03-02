@@ -49,13 +49,9 @@
         questionNr: 0,
         questions: [
           {
-            questionText: "Test 1",
+            questionText: "",
             questionScore: undefined
           },
-          {
-            questionText: "Test 2",
-            questionScore: undefined
-          }
         ],
       }
     },
@@ -83,12 +79,19 @@
       submit() {
         let responses = this.questions.map((e, i) => {
           return {
-            "questionNr": i,
+            "questionNr": i +1,
             "value": e.questionScore
           }
         });
 
-        console.log(responses)
+        let data = {
+          responses,
+          token: window.localStorage.getItem('token')
+      };
+        console.log(data);
+        axios.post('http://localhost:5000/answer', data).then((response) => {
+          console.log(response.data)
+        })
       },
       loadData() {
         axios.get('http://localhost:5000/questions').then((response) => {
