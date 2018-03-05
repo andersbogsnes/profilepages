@@ -7,4 +7,6 @@ js/*
 .env
 /backend/static/
 *.xlsx*
-/frontend/dist
+/frontend/dist.pytest_cache
+backend/.pytest_cache
+frontend/dist/

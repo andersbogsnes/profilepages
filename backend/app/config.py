@@ -30,7 +30,7 @@ class ProdConfig(Config):
 
 class TestConfig(Config):
     TESTING = True
-    SQLALCHEMY_DATABASE_URI = 'sqlite:///:memory:'
+    SQLALCHEMY_DATABASE_URI = os.getenv('DB_TEST_HOST')
     SECRET_KEY = 'mysupersecretkey'
     BCRYPT_LOG_ROUNDS = 4
 
