@@ -31,10 +31,9 @@ export default new Router({
       component: Signup
     },
     {
-      path:'/status/:id',
+      path:'/status',
       name: 'Status',
-      component: Status,
-      props: true
+      component: Status
     }
   ]
 })

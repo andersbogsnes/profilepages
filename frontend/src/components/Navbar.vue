@@ -2,11 +2,11 @@
   <nav class="navbar" role="navigation">
     <div class="navbar-brand">
       <a href="#" class="navbar-item">
-        <figure class="image is-64x64">
-          <router-link to="/">
+        <router-link to="/">
+          <figure class="image is-64x64">
             <img src="../assets/logo.png">
-          </router-link>
-        </figure>
+          </figure>
+        </router-link>
       </a>
     </div>
   <div class="navbar-start">
@@ -21,9 +21,9 @@
     <a class="navbar-item" v-if="loggedIn" @click="logOut">
       Logout
     </a>
-    <a class="navbar-item" v-if="loggedIn">
+    <router-link class="navbar-item" v-if="loggedIn" to="/status">
       Status
-    </a>
+    </router-link>
   </div>
   </nav>
 </template>

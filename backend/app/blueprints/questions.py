@@ -3,6 +3,7 @@ import json
 from flask import Blueprint, jsonify, request
 from app.model import Question, Answers, User, Params, Result, Profiles
 from app.extensions import db
+from app.utils import authenticate
 
 question = Blueprint('questions', __name__)
 
@@ -13,7 +14,8 @@ def get_questions():
     return jsonify(response)
 
 
-@question.route('/result/<int:user_id>')
+@question.route('/result')
+@authenticate
 def get_result(user_id):
     message = {
         "status": "error",
@@ -33,15 +35,13 @@ def get_result(user_id):
 
 
 @question.route('/answer', methods=['POST'])
-def save_answers():
+@authenticate
+def save_answers(user_id):
     message = {
         "status": "error",
         "message": "An error occurred",
     }
     data = request.get_json(cache=False)
-    print(request.headers.get('Authorization'))
-
-    user_id = User.decode_token(data['token'])
 
     if isinstance(user_id, str):
         message["message"] = user_id

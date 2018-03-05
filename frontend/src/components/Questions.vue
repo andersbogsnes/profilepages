@@ -1,34 +1,47 @@
 <template>
   <div class="container">
     <div class="columns">
-      <div class="column is-6">
+      <div class="column is-6 questions">
         <transition name="slide" mode="out-in">
           <question :questionText="currentQuestion.questionText"
                     :questionScore.sync="currentQuestion.questionScore"
                     :key="questionNr"/>
         </transition>
+      <div class="columns">
+        <div class="column">
+          <a class="button is-primary"
+             v-if="this.questionNr!==0"
+             @click="next(-1)">
+            Forrige
+          </a>
+        </div>
+        <div class="column">
+          <p>{{ this.questionNr +1 }} / {{ this.questions.length }}</p>
+        </div>
+        <div class="column">
+          <a class="button is-primary"
+             v-if="questionNr!==questions.length -1"
+             @click="next(1)">
+            Næste
+          </a>
+          <a class="button is-primary" v-else
+             @click="submit()"
+             :disabled="missingAnswer">
+            Submit
+          </a>
+        </div>
       </div>
     </div>
-    <div class="columns">
-      <div class="column is-2">
-        <a class="button is-primary"
-           v-if="this.questionNr!==0"
-           @click="next(-1)">
-          Forrige
-        </a>
+      <div class="column is-6">
+        <h2 class="subtitle">Nøgle</h2>
+        <p>1: Helt enig</p>
+        <p>2: Nærmest enig</p>
+        <p>3: Nærmest uenig</p>
+        <p>4: Helt uenig</p>
+        <p>5: Ved ikke</p>
       </div>
-      <div class="column is-2">
-        <a class="button is-primary"
-           v-if="questionNr!==questions.length -1"
-           @click="next(1)">
-          Næste
-        </a>
-        <a class="button is-primary" v-else
-           @click="submit()">
-          Submit
-        </a>
-      </div>
-    </div>
+
+  </div>
   </div>
 </template>
 
@@ -60,6 +73,12 @@
     computed: {
       currentQuestion() {
         return this.questions[this.questionNr]
+      },
+      missingAnswer() {
+        let missing = this.questions.filter((e) => {
+          return e.questionScore !== undefined
+        });
+        return missing.length === 0
       }
     },
 
@@ -116,6 +135,9 @@
 </script>
 
 <style scoped>
+  .questions > .columns {
+    min-height: 25vh;
+  }
   .slide-enter-active {
     animation: fade-in 300ms
   }

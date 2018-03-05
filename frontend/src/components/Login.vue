@@ -3,7 +3,9 @@
     <div class="columns">
       <div class="column is-6">
         <h1 class="title">Log Ind</h1>
-        <h2 class="subtitle">Ikke tilmeldt endnu? <router-link to="/signup">Tilmeld dig!</router-link></h2>
+        <h2 class="subtitle">Ikke tilmeldt endnu?
+          <router-link to="/signup">Tilmeld dig!</router-link>
+        </h2>
 
         <div class="field">
           <label class="label">Email</label>
@@ -24,7 +26,9 @@
             </span>
           </div>
         </div>
-
+        <div class="field">
+          <p class="help is-danger" v-if="invalidUser">Bruger eller passord er forkert</p>
+        </div>
         <div class="field is-grouped">
           <div class="control">
             <button class="button is-link" :disabled="!validForm" @click="submit">Submit</button>
@@ -34,6 +38,7 @@
               <button class="button is-text">Cancel</button>
             </router-link>
           </div>
+
         </div>
       </div>
 
@@ -42,7 +47,7 @@
 </template>
 
 <script>
-  import { HTTP } from "../api/api";
+  import {HTTP} from "../api/api";
 
   export default {
     name: "login",

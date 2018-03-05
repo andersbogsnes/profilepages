@@ -21,19 +21,27 @@ export default {
   },
   data () {
     return {
-      loggedIn: false,
       started: false,
+      token: ''
+    }
+  },
+  mounted() {
+    this.token = window.localStorage.getItem('token') || '';
+  },
+  computed: {
+    loggedIn: function () {
+      return this.token !== '';
     }
   },
   methods: {
     logIn(data) {
-      this.loggedIn = true;
-      window.localStorage.setItem('token', data.auth)
+      window.localStorage.setItem('token', data.auth);
+      this.token = data.auth;
     },
 
     logOut() {
-      this.loggedIn = false;
-      window.localStorage.removeItem('token')
+      this.token = '';
+      window.localStorage.removeItem('token');
     }
   }
 }

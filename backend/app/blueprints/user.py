@@ -4,6 +4,13 @@ from app.model import User
 users = Blueprint('users', __name__)
 
 
+# TODO: Factor out auth blueprint
+# TODO: Factor out model into each blueprint
+# TODO: Handle results - make pretty
+# TODO: Handle lost password
+# TODO: Email integration
+# TODO: Send email of result?
+
 @users.route('/user', methods=['POST'])
 def create_user():
     if request.method == 'POST':

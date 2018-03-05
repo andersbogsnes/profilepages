@@ -7,3 +7,4 @@ js/*
 .env
 /backend/static/
 *.xlsx*
+/frontend/dist

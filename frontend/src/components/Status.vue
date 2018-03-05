@@ -20,8 +20,7 @@
     },
 
     mounted() {
-      HTTP.get(`/result/${this.id}`).then((response) => {
-        console.log(response.data);
+      HTTP.get('/result').then((response) => {
         this.results = response.data.data;
       }).catch((error) => console.log(error))
     }
