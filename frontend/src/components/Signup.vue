@@ -77,7 +77,7 @@
 </template>
 
 <script>
-  import axios from 'axios';
+  import { HTTP } from "../api/api";
 
   export default {
     name: "login",
@@ -111,7 +111,7 @@
           email: this.email,
           password: this.password
         };
-        axios.post('http://localhost:5000/user', formData).then((e) => {
+        HTTP.post('/user', formData).then((e) => {
           this.userExists = false;
           this.$emit('loggedIn', e.data.data);
           this.$router.push('/questions')

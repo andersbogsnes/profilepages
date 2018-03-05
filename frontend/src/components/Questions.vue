@@ -35,6 +35,7 @@
 <script>
   import Question from './Question';
   import axios from 'axios';
+  import { HTTP }from '../api/api';
 
   export default {
     components: {
@@ -89,12 +90,12 @@
           token: window.localStorage.getItem('token')
       };
         console.log(data);
-        axios.post('http://localhost:5000/answer', data).then((response) => {
+        HTTP.post('/answer', data).then((response) => {
           console.log(response.data)
         })
       },
       loadData() {
-        axios.get('http://localhost:5000/questions').then((response) => {
+        HTTP.get('/questions').then((response) => {
           this.questions = response.data.map((e) => {
             return {
               id: e.id,

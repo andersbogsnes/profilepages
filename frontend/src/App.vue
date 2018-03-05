@@ -21,7 +21,7 @@ export default {
   },
   data () {
     return {
-      loggedIn: false,
+      loggedIn: true,
       started: false,
     }
   },
