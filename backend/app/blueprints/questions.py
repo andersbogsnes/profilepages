@@ -1,5 +1,7 @@
+import json
+
 from flask import Blueprint, jsonify, request
-from app.model import Question, Answers, User, Params, Result
+from app.model import Question, Answers, User, Params, Result, Profiles
 from app.extensions import db
 
 question = Blueprint('questions', __name__)
@@ -11,6 +13,25 @@ def get_questions():
     return jsonify(response)
 
 
+@question.route('/result/<int:user_id>')
+def get_result(user_id):
+    message = {
+        "status": "error",
+        "message": "User doesn't exist",
+        "data": {}
+    }
+
+    result = Result.get_results(user_id)
+
+    if result:
+        message["status"] = "success"
+        message["message"] = "Result found"
+        message["data"] = json.loads(result)
+        return jsonify(message), 200
+
+    return jsonify(message), 404
+
+
 @question.route('/answer', methods=['POST'])
 def save_answers():
     message = {
@@ -18,6 +39,7 @@ def save_answers():
         "message": "An error occurred",
     }
     data = request.get_json(cache=False)
+    print(request.headers.get('Authorization'))
 
     user_id = User.decode_token(data['token'])
 
@@ -25,12 +47,12 @@ def save_answers():
         message["message"] = user_id
         return jsonify(message), 403
 
-    version = get_max_version(user_id)
+    version = Answers.get_max_version(user_id)
 
-    if version:
-        version += 1
-    else:
+    if version is None:
         version = 0
+    else:
+        version += 1
 
     for answer in data['responses']:
         question_nr = answer['questionNr']
@@ -42,31 +64,10 @@ def save_answers():
         db.session.add(new_score)
 
     db.session.commit()
+
+    scores = Answers.calculate_score(user_id, version)
+    Result.save_results(scores)
+
     message["status"] = "success"
     message["message"] = "Answers Saved"
     return jsonify(message), 200
-
-
-def get_max_version(user_id):
-    return db.session.query(db.func.max(Answers.version)).filter(Answers.user_id == user_id).scalar()
-
-
-def calculate_score(user_id):
-    version = get_max_version(user_id)
-    if version is None:
-        return None
-    results = db.session.query(Answers).filter(Answers.user_id == user_id).filter(Answers.version == version)
-
-    for result in results:
-        score = Params.query.filter(Params.question_nr == result.question_nr).filter(Params.answer == result.answer)
-        for value in score:
-            profile_score = Result(user_id=user_id,
-                                   profile_id=value.profile,
-                                   percent_score=value.coef)
-            db.session.add(profile_score)
-    db.session.commit()
-    return (db.session.query(Result.profile_id,
-                             db.func.sum(Result.percent_score))
-            .filter_by(user_id=user_id)
-            .group_by(Result.profile_id)
-            .all())

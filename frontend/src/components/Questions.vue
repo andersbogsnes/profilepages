@@ -35,12 +35,13 @@
 <script>
   import Question from './Question';
   import axios from 'axios';
-  import { HTTP }from '../api/api';
+  import {HTTP} from '../api/api';
 
   export default {
     components: {
       question: Question,
     },
+    props: ['id'],
     mounted() {
       this.loadData();
     },
@@ -80,7 +81,7 @@
       submit() {
         let responses = this.questions.map((e, i) => {
           return {
-            "questionNr": i +1,
+            "questionNr": i + 1,
             "value": e.questionScore
           }
         });
@@ -88,21 +89,23 @@
         let data = {
           responses,
           token: window.localStorage.getItem('token')
-      };
-        console.log(data);
+        };
         HTTP.post('/answer', data).then((response) => {
-          console.log(response.data)
+          this.$router.push({
+            name: 'Status',
+            params: {results: JSON.parse(response.data.data), id: this.id}
+          });
         })
       },
       loadData() {
         HTTP.get('/questions').then((response) => {
-          this.questions = response.data.map((e) => {
-            return {
-              id: e.id,
-              questionText: e.text,
-              questionScore: undefined
-            }
-          })
+            this.questions = response.data.map((e) => {
+              return {
+                id: e.id,
+                questionText: e.text,
+                questionScore: undefined
+              }
+            })
           }
         ).catch((error) => {
           console.log(error)
@@ -113,17 +116,22 @@
 </script>
 
 <style scoped>
-  .slide-enter-active { animation: fade-in 300ms}
-  .slide-leave-active { animation: fade-out 300ms}
+  .slide-enter-active {
+    animation: fade-in 300ms
+  }
+
+  .slide-leave-active {
+    animation: fade-out 300ms
+  }
 
   @keyframes fade-in {
     0% {
       transform: translateX(-100px);
       opacity: 0
     }
-  50% {
-    opacity: 0.5;
-  }
+    50% {
+      opacity: 0.5;
+    }
     100% {
       transform: translateX(0px);
       opacity: 1;

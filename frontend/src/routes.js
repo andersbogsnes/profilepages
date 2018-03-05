@@ -4,6 +4,7 @@ import Questions from './components/Questions';
 import Start from './components/Start';
 import Login from './components/Login';
 import Signup from './components/Signup';
+import Status from './components/Status';
 
 Vue.use(Router);
 
@@ -28,6 +29,12 @@ export default new Router({
       path:'/signup',
       name: 'Signup',
       component: Signup
+    },
+    {
+      path:'/status/:id',
+      name: 'Status',
+      component: Status,
+      props: true
     }
   ]
 })
