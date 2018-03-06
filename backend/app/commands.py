@@ -3,7 +3,8 @@ from flask.cli import with_appcontext
 
 from app.config import current_config
 from app.extensions import db
-from app.model import Question, Result, Profiles, Params, Answers, User
+from app.blueprints.survey.model import Question, Answers, Result, Profiles, Params
+from app.blueprints.user.model import User
 
 
 @click.command()

@@ -1,7 +1,7 @@
 import json
 import pytest
 
-from app.model import Answers
+from app.blueprints.survey.model import Answers
 from tests.test_base import TestBase
 
 
@@ -9,7 +9,7 @@ from tests.test_base import TestBase
 class TestQuestions(TestBase):
 
     def test_questions_return_correctly(self, client):
-        resp = client.get('/questions')
+        resp = client.get('/survey/questions')
         assert 200 == resp.status_code
         data = json.loads(resp.data)
         assert "success" == data["status"]
@@ -20,17 +20,17 @@ class TestQuestions(TestBase):
             "text"]
 
     def test_answer_fails_if_not_authenticated_correctly(self, client):
-        resp = client.post('/answer', data=json.dumps(self.answer), content_type='application/json')
+        resp = client.post('/survey/answer', data=json.dumps(self.answer), content_type='application/json')
         assert 401 == resp.status_code
         data = json.loads(resp.data)
         assert "error" == data["status"]
         assert "Must be logged in" == data["message"]
         assert data.get("data") is None
 
-    def test_answer_returns_correctly_when_logged_in(self, client, session):
+    def test_answer_returns_correctly_when_logged_in(self, client):
         token = self.get_token(client)
 
-        resp = client.post('/answer', data=json.dumps(self.answer),
+        resp = client.post('/survey/answer', data=json.dumps(self.answer),
                            headers={"Authorization": f"Bearer {token}"},
                            content_type="application/json")
         assert 200 == resp.status_code
@@ -51,7 +51,7 @@ class TestQuestions(TestBase):
             "value": None
         }]
 
-        resp = client.post('/answer',
+        resp = client.post('/survey/answer',
                            data=json.dumps(wrong_answer),
                            content_type='application/json',
                            headers={"Authorization": f"Bearer {token}"})
@@ -65,7 +65,7 @@ class TestQuestions(TestBase):
         token = self.get_token(client)
         self.save_answer(client, token)
 
-        resp = client.get('/result', headers={"Authorization": f"Bearer {token}"})
+        resp = client.get('/survey/result', headers={"Authorization": f"Bearer {token}"})
         assert 200 == resp.status_code
         data = json.loads(resp.data)
         assert "success" == data["status"]
@@ -75,7 +75,7 @@ class TestQuestions(TestBase):
         assert 100 == int(total_score)
 
     def test_result_fails_correctly_with_no_token(self, client):
-        resp = client.get('/result')
+        resp = client.get('/survey/result')
         assert 401 == resp.status_code
         data = json.loads(resp.data)
         assert "error" == data["status"]

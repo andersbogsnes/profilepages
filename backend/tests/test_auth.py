@@ -61,7 +61,7 @@ class TestAuth(TestBase):
             "email": self.user["email"],
             "password": self.user["password"]
         }
-        resp = client.post('/login', data=json.dumps(login_user_info), content_type='application/json')
+        resp = client.post('/auth/login', data=json.dumps(login_user_info), content_type='application/json')
         assert 200 == resp.status_code
         data = json.loads(resp.data)
         assert "success" == data["status"]
@@ -72,7 +72,7 @@ class TestAuth(TestBase):
         assert data["data"]["auth"]
 
     def test_login_fails_correctly_with_invalid_user(self, client):
-        resp = client.post('/login',
+        resp = client.post('/auth/login',
                            data=json.dumps(self.user),
                            content_type='application/json')
         assert resp.status_code == 404
@@ -89,7 +89,26 @@ class TestAuth(TestBase):
             "password": self.user["password"]
         }
         time.sleep(1)
-        resp = client.post('/login', data=json.dumps(login_info), content_type='application/json')
+        resp = client.post('/auth/login', data=json.dumps(login_info), content_type='application/json')
         assert 200 == resp.status_code
         data = json.loads(resp.data)
         assert old_token != data["data"]["auth"]
+
+    def test_get_user_returns_correctly(self, client):
+        token = self.get_token(client)
+        resp = client.get('/user', headers={"Authorization": f"Bearer {token}"})
+
+        assert 200 == resp.status_code
+        data = json.loads(resp.data)
+        assert "success" == data["status"]
+        assert "User found" == data["message"]
+        assert self.user["user_name"] == data["data"]["user_name"]
+        assert self.user["email"] == data["data"]["email"]
+        assert self.user["initials"] == data["data"]["initials"]
+
+    def test_get_user_returns_failure_without_token(self, client):
+        resp = client.get('/user')
+        assert 401 == resp.status_code
+        data = json.loads(resp.data)
+        assert "error" == data["status"]
+        assert "Must be logged in" == data["message"]

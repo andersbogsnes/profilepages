@@ -2,7 +2,7 @@ import pytest
 from app.extensions import db as _db
 from app.create_app import create_app
 from app.config import configs
-from app.model import Params, Profiles, Question
+from app.blueprints.survey.model import Question, Profiles, Params
 
 
 @pytest.fixture(name="app", scope='session')

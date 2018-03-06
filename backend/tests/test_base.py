@@ -67,7 +67,7 @@ class TestBase:
             "email": self.user["email"],
             "password": self.user["password"]
         }
-        return client.post("/login", data=json.dumps(login_user_info), content_type='application/json')
+        return client.post("/auth/login", data=json.dumps(login_user_info), content_type='application/json')
 
     def get_token(self, client):
         resp = self.login_user(client)
@@ -78,7 +78,7 @@ class TestBase:
         if token is None:
             token = self.get_token(client)
 
-        return client.post('/answer',
+        return client.post('/survey/answer',
                            data=json.dumps(self.answer),
                            content_type='application/json',
                            headers={'Authorization': f"Bearer {token}"}

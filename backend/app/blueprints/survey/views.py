@@ -1,14 +1,15 @@
 import json
 
 from flask import Blueprint, jsonify, request
-from app.model import Question, Answers, User, Params, Result, Profiles
+
 from app.extensions import db
-from app.utils import authenticate
+from app.blueprints.survey.model import Question, Answers, Result
+from app.blueprints.auth.utils import authenticate
 
-question = Blueprint('questions', __name__)
+survey = Blueprint('survey', __name__, url_prefix='/survey')
 
 
-@question.route('/questions')
+@survey.route('/questions')
 def get_questions():
     message = {
         "status": "error",
@@ -25,7 +26,7 @@ def get_questions():
     return jsonify(message), 404
 
 
-@question.route('/result')
+@survey.route('/result')
 @authenticate
 def get_result(user_id):
     message = {
@@ -45,7 +46,7 @@ def get_result(user_id):
     return jsonify(message), 404
 
 
-@question.route('/answer', methods=['POST'])
+@survey.route('/answer', methods=['POST'])
 @authenticate
 def save_answers(resp):
     message = {

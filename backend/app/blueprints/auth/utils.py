@@ -1,6 +1,6 @@
 from flask import request, redirect, url_for, jsonify
 from functools import wraps
-from app.model import User
+from app.blueprints.user.model import User
 
 
 def authenticate(f):

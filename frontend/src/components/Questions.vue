@@ -47,8 +47,7 @@
 
 <script>
   import Question from './Question';
-  import axios from 'axios';
-  import {HTTP} from '../api/api';
+  import {HTTP, URLS} from '../api/api';
 
   export default {
     components: {
@@ -105,14 +104,14 @@
           }
         });
 
-        HTTP.post('/answer', responses).then((response) => {
+        HTTP.post(URLS.answer, responses).then((response) => {
           this.$router.push('/status');
         }).catch((error) => {
           console.log(error)
         })
       },
       loadData() {
-        HTTP.get('/questions').then((response) => {
+        HTTP.get(URLS.question).then((response) => {
             this.questions = response.data.data.map((e) => {
               return {
                 id: e.id,
