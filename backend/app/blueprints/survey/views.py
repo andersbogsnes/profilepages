@@ -40,7 +40,7 @@ def get_result(user_id):
     if result:
         message["status"] = "success"
         message["message"] = "Result found"
-        message["data"] = json.loads(result)
+        message["data"] = result
         return jsonify(message), 200
 
     return jsonify(message), 404
@@ -70,7 +70,7 @@ def save_answers(resp):
     for answer in data:
         question_nr = answer['questionNr']
         score = answer['value']
-        new_score = Answers(question_nr=question_nr,
+        new_score = Answers(question_id=question_nr,
                             user_id=user_id,
                             answer=score,
                             version=version)
@@ -79,7 +79,7 @@ def save_answers(resp):
     db.session.commit()
 
     scores = Answers.calculate_score(user_id, version)
-    Result.save_results(scores)
+    Result.save_json(scores)
 
     message["status"] = "success"
     message["message"] = "Answers Saved"

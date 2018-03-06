@@ -71,7 +71,7 @@ class TestQuestions(TestBase):
         assert "success" == data["status"]
         assert "Result found" == data["message"]
         assert data["data"]
-        total_score = sum([row["percent_score"] for row in data["data"]])
+        total_score = sum([row["percentScore"] for row in data["data"]])
         assert 100 == int(total_score)
 
     def test_result_fails_correctly_with_no_token(self, client):

@@ -12,8 +12,8 @@ class Question(db.Model):
     id = db.Column(db.Integer, primary_key=True)
     text = db.Column(db.Text)
 
-    def __init__(self, id, text):
-        self.id = id
+    def __init__(self, _id, text):
+        self.id = _id
         self.text = text
 
     @classmethod
@@ -27,12 +27,12 @@ class Question(db.Model):
 
     @classmethod
     def count(cls):
-        return len(cls.query.all())
+        return db.session.query(db.func.count(cls.id)).scalar()
 
 
 class Answers(db.Model):
     id = db.Column(db.Integer, primary_key=True)
-    question_nr = db.Column(db.Integer, db.ForeignKey('question.id'))
+    question_id = db.Column(db.Integer, db.ForeignKey('question.id'))
     user_id = db.Column(db.Integer, db.ForeignKey('user.id'))
     answer = db.Column(db.Integer)
     version = db.Column(db.Integer, default=0)
@@ -41,21 +41,25 @@ class Answers(db.Model):
     @classmethod
     def calculate_score(cls, user_id, version):
         results = (db.session.query(Answers.user_id,
-                                    Params.profile,
+                                    Params.profile_id,
                                     db.func.sum(Params.coef).label('coef'))
                    .join(Params,
                          db.and_(
-                             Answers.question_nr == Params.question_nr,
+                             Answers.question_id == Params.question_id,
                              Answers.answer == Params.answer))
                    .filter(Answers.user_id == user_id)
                    .filter(Answers.version == version)
-                   .group_by(Answers.user_id, Params.profile)
+                   .group_by(Answers.user_id, Params.profile_id)
                    ).cte()
 
-        return (db.session.query(results.c.user_id,
-                                 results.c.profile,
-                                 (results.c.coef + Profiles.intercept).label('coef'))
-                .join(Profiles, results.c.profile == Profiles.id)).all()
+        query = (db.session.query(results.c.user_id,
+                                  results.c.profile_id,
+                                  (results.c.coef + Profiles.intercept).label('coef'))
+                 .join(Profiles, results.c.profile_id == Profiles.id))
+
+        df = pd.read_sql(query.statement, query.session.bind)
+        df['percent_score'] = df.coef.apply(np.exp).transform(lambda x: x / x.sum()).multiply(100)
+        return df.to_dict(orient='records')
 
     @classmethod
     def get_max_version(cls, user_id):
@@ -67,36 +71,35 @@ class Result(db.Model):
     user_id = db.Column(db.Integer, db.ForeignKey('user.id'))
     profile_id = db.Column(db.Integer, db.ForeignKey('profiles.id'))
     percent_score = db.Column(db.Float)
+    version = db.Column(db.Integer, default=0)
+
+    profile = db.relationship('Profiles', backref='results', cascade="all")
 
     @classmethod
-    def save_results(cls, results):
-        for result in results:
+    def save_json(cls, json_result):
+        for result in json_result:
             existing_result = (
-                cls.query.filter_by(user_id=result.user_id)
-                    .filter_by(profile_id=result.profile)
+                cls.query.filter_by(user_id=result["user_id"])
+                    .filter_by(profile_id=result["profile_id"])
                     .first())
 
             if existing_result:
-                existing_result.percent_score = result.coef
+                existing_result.percent_score = result["percent_score"]
                 db.session.add(existing_result)
 
             else:
-                new_result = cls(user_id=result.user_id,
-                                 profile_id=result.profile,
-                                 percent_score=result.coef
+                new_result = cls(user_id=result["user_id"],
+                                 profile_id=result["profile_id"],
+                                 percent_score=result["percent_score"]
                                  )
                 db.session.add(new_result)
         db.session.commit()
 
     @classmethod
     def get_results(cls, user_id):
-        query = (db.session.query(Profiles.type_name,
-                                  Result.percent_score)
-                 .join(Result, Result.profile_id == Profiles.id)
-                 .filter(Result.user_id == user_id))
-        df = pd.read_sql(query.statement, query.session.bind)
-        df['percent_score'] = df.percent_score.apply(np.exp).transform(lambda x: x / x.sum()).multiply(100)
-        return df.to_json(force_ascii=False, orient='records')
+        query = cls.query.filter_by(user_id=user_id)
+
+        return [{"profileName": r.profile.type_name, "percentScore": r.percent_score} for r in query.all()]
 
 
 class Profiles(db.Model):
@@ -121,8 +124,8 @@ class Profiles(db.Model):
 
 class Params(db.Model):
     id = db.Column(db.Integer, primary_key=True)
-    question_nr = db.Column(db.Integer)
-    profile = db.Column(db.Integer, db.ForeignKey('profiles.id'))
+    question_id = db.Column(db.Integer, db.ForeignKey('question.id'))
+    profile_id = db.Column(db.Integer, db.ForeignKey('profiles.id'))
     answer = db.Column(db.Integer)
     coef = db.Column(db.Float)
 
@@ -131,8 +134,8 @@ class Params(db.Model):
         with open(current_config.BASE_PATH.joinpath('data', 'params.csv')) as f:
             reader = csv.DictReader(f, skipinitialspace=True)
             for line in reader:
-                new_param = cls(question_nr=int(line['question_nr']),
-                                profile=int(line['profile']),
+                new_param = cls(question_id=int(line['question_nr']),
+                                profile_id=int(line['profile']),
                                 answer=int(line['answer']),
                                 coef=float(line['param']))
                 db.session.add(new_param)

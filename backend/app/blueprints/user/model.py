@@ -14,8 +14,8 @@ class User(db.Model):
     initials = db.Column(db.Text, unique=True)
     password = db.Column(db.Binary(128))
 
-    answers = db.relationship('Answers', backref='user', cascade="all, delete-orphan")
-    result = db.relationship('Result', backref='user', cascade="all, delete-orphan")
+    answers = db.relationship('Answers', backref='user', cascade="all")
+    result = db.relationship('Result', backref='user', cascade="all")
 
     def __init__(self, user_name, email, initials, password):
         self.user_name = user_name

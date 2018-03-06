@@ -77,7 +77,7 @@
 </template>
 
 <script>
-  import { HTTP, URLS } from "../api/api";
+  import { postUrl, URLS } from "../api/api";
 
   export default {
     name: "login",
@@ -111,7 +111,7 @@
           email: this.email,
           password: this.password
         };
-        HTTP.post(URLS.user, formData).then((e) => {
+        postUrl(URLS.user, formData).then((e) => {
           this.userExists = false;
           this.$emit('loggedIn', e.data.data);
           this.$router.push('/questions')

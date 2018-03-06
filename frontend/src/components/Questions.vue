@@ -47,13 +47,12 @@
 
 <script>
   import Question from './Question';
-  import {HTTP, URLS} from '../api/api';
+  import {getUrl, postUrl, URLS} from '../api/api';
 
   export default {
     components: {
       question: Question,
     },
-    props: ['id'],
     mounted() {
       this.loadData();
     },
@@ -77,7 +76,7 @@
         let missing = this.questions.filter((e) => {
           return e.questionScore !== undefined
         });
-        return missing.length === 0
+        return missing.length !== 0
       }
     },
 
@@ -104,14 +103,14 @@
           }
         });
 
-        HTTP.post(URLS.answer, responses).then((response) => {
+        postUrl(URLS.answer, responses).then((response) => {
           this.$router.push('/status');
         }).catch((error) => {
           console.log(error)
         })
       },
       loadData() {
-        HTTP.get(URLS.question).then((response) => {
+        getUrl(URLS.question).then((response) => {
             this.questions = response.data.data.map((e) => {
               return {
                 id: e.id,
