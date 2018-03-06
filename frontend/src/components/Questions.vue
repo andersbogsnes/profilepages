@@ -107,6 +107,8 @@
 
         HTTP.post('/answer', responses).then((response) => {
           this.$router.push('/status');
+        }).catch((error) => {
+          console.log(error)
         })
       },
       loadData() {

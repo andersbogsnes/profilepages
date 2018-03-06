@@ -5,8 +5,9 @@ node_modules
 __pycache__
 js/*
 .env
-/backend/static/
+app/static/js/build*
 *.xlsx*
 /frontend/dist.pytest_cache
 backend/.pytest_cache
 frontend/dist/
+.pytest_cache

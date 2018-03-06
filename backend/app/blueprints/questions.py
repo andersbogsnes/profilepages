@@ -47,16 +47,18 @@ def get_result(user_id):
 
 @question.route('/answer', methods=['POST'])
 @authenticate
-def save_answers(user_id):
+def save_answers(resp):
     message = {
         "status": "error",
         "message": "An error occurred",
     }
     data = request.get_json(cache=False)
 
-    if isinstance(user_id, str):
-        message["message"] = user_id
+    if isinstance(resp, str):
+        message["message"] = resp
         return jsonify(message), 403
+
+    user_id = resp # resp validated correctly - it is the user_id
     version = Answers.get_max_version(user_id)
 
     if version is None:
@@ -64,7 +66,7 @@ def save_answers(user_id):
     else:
         version += 1
 
-    for answer in data['responses']:
+    for answer in data:
         question_nr = answer['questionNr']
         score = answer['value']
         new_score = Answers(question_nr=question_nr,

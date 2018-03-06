@@ -1,12 +1,11 @@
 from sqlalchemy.exc import IntegrityError
-
-from app.extensions import db, bcrypt
-import datetime
-import csv
-from app.config import current_config
 import jwt
 import pandas as pd
 import numpy as np
+import datetime
+import csv
+from app.config import current_config
+from app.extensions import db, bcrypt
 
 
 class Question(db.Model):
@@ -26,6 +25,9 @@ class Question(db.Model):
                 db.session.add(new_line)
         db.session.commit()
 
+    @classmethod
+    def count(cls):
+        return len(cls.query.all())
 
 class User(db.Model):
     id = db.Column(db.Integer, primary_key=True)

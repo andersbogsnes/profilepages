@@ -1,6 +1,7 @@
 import click
-from app.config import current_config
 from flask.cli import with_appcontext
+
+from app.config import current_config
 from app.extensions import db
 from app.model import Question, Result, Profiles, Params, Answers, User
 
@@ -8,7 +9,7 @@ from app.model import Question, Result, Profiles, Params, Answers, User
 @click.command()
 def test():
     import pytest
-    rv = pytest.main([current_config.BASE_PATH.joinpath('tests'), '--verbose'])
+    rv = pytest.main([current_config.BASE_PATH.parent.joinpath('tests'), '--verbose'])
     exit(rv)
 
 
