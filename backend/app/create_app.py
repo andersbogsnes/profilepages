@@ -4,6 +4,7 @@ from app.model import User, Question, Answers, Params, Profiles, Result
 from app.blueprints.questions import question
 from app.blueprints.user import users
 from app.extensions import db, cors, bcrypt
+from app.commands import init_db, test
 
 
 def create_app(config=ProdConfig):
@@ -18,19 +19,11 @@ def create_app(config=ProdConfig):
     app.register_blueprint(users)
 
     register_shell_context(app)
+    register_commands(app)
 
     @app.route('/')
     def index():
         return render_template('index.html')
-
-    @app.cli.command()
-    def init_db():
-        db.drop_all()
-        db.create_all()
-        Question.seed_data()
-        Profiles.seed_data()
-        Params.seed_data()
-        print("Database created")
 
     return app
 
@@ -43,7 +36,13 @@ def register_shell_context(app):
             'Answers': Answers,
             'Params': Params,
             'Question': Question,
-            'Result': Result
-
+            'Result': Result,
+            'Profiles': Profiles,
         }
+
     app.shell_context_processor(shell_context)
+
+
+def register_commands(app):
+    app.cli.add_command(init_db)
+    app.cli.add_command(test)

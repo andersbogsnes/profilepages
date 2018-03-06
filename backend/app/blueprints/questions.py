@@ -10,8 +10,19 @@ question = Blueprint('questions', __name__)
 
 @question.route('/questions')
 def get_questions():
+    message = {
+        "status": "error",
+        "message": "Questions not found",
+        "data": {}
+    }
     response = [{'id': row.id, 'text': row.text} for row in Question.query.all()]
-    return jsonify(response)
+    if response:
+        message["status"] = "success"
+        message["message"] = "Questions loaded successfully"
+        message["data"] = response
+        return jsonify(message), 200
+
+    return jsonify(message), 404
 
 
 @question.route('/result')
@@ -46,7 +57,6 @@ def save_answers(user_id):
     if isinstance(user_id, str):
         message["message"] = user_id
         return jsonify(message), 403
-
     version = Answers.get_max_version(user_id)
 
     if version is None:

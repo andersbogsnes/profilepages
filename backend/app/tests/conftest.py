@@ -1,12 +1,12 @@
 import pytest
-from app.extensions import db
+from app.extensions import db as _db
 from app.create_app import create_app
 from app.config import configs
 from app.model import Params, Profiles, Question
 
 
-@pytest.fixture(scope='session')
-def app():
+@pytest.fixture(name="app", scope='session')
+def _app():
     config = configs['test']
     app = create_app(config)
     ctx = app.app_context()
@@ -15,26 +15,26 @@ def app():
     ctx.pop()
 
 
-@pytest.fixture()
+@pytest.fixture(scope='session')
 def client(app):
     return app.test_client()
 
 
-@pytest.fixture()
-def db(app):
-    db.create_all()
+@pytest.fixture(name="db")
+def database():
+    _db.create_all()
     Question.seed_data()
     Profiles.seed_data()
     Params.seed_data()
-    yield db
-    db.drop_all()
+    yield _db
+    _db.drop_all()
 
 
 @pytest.fixture(scope='function')
 def session(db):
     conn = db.engine.connect()
     transaction = conn.begin()
-    yield session
+    yield db.session
     transaction.rollback()
     conn.close()
-    session.remove()
+    db.session.remove()

@@ -7,31 +7,31 @@
                     :questionScore.sync="currentQuestion.questionScore"
                     :key="questionNr"/>
         </transition>
-      <div class="columns">
-        <div class="column">
-          <a class="button is-primary"
-             v-if="this.questionNr!==0"
-             @click="next(-1)">
-            Forrige
-          </a>
-        </div>
-        <div class="column">
-          <p>{{ this.questionNr +1 }} / {{ this.questions.length }}</p>
-        </div>
-        <div class="column">
-          <a class="button is-primary"
-             v-if="questionNr!==questions.length -1"
-             @click="next(1)">
-            Næste
-          </a>
-          <a class="button is-primary" v-else
-             @click="submit()"
-             :disabled="missingAnswer">
-            Submit
-          </a>
+        <div class="columns">
+          <div class="column">
+            <a class="button is-primary"
+               v-if="this.questionNr!==0"
+               @click="next(-1)">
+              Forrige
+            </a>
+          </div>
+          <div class="column">
+            <p>{{ this.questionNr +1 }} / {{ this.questions.length }}</p>
+          </div>
+          <div class="column">
+            <a class="button is-primary"
+               v-if="questionNr!==questions.length -1"
+               @click="next(1)">
+              Næste
+            </a>
+            <a class="button is-primary" v-else
+               @click="submit()"
+               :disabled="missingAnswer">
+              Submit
+            </a>
+          </div>
         </div>
       </div>
-    </div>
       <div class="column is-6">
         <h2 class="subtitle">Nøgle</h2>
         <p>1: Helt enig</p>
@@ -41,7 +41,7 @@
         <p>5: Ved ikke</p>
       </div>
 
-  </div>
+    </div>
   </div>
 </template>
 
@@ -105,20 +105,13 @@
           }
         });
 
-        let data = {
-          responses,
-          token: window.localStorage.getItem('token')
-        };
-        HTTP.post('/answer', data).then((response) => {
-          this.$router.push({
-            name: 'Status',
-            params: {results: JSON.parse(response.data.data), id: this.id}
-          });
+        HTTP.post('/answer', responses).then((response) => {
+          this.$router.push('/status');
         })
       },
       loadData() {
         HTTP.get('/questions').then((response) => {
-            this.questions = response.data.map((e) => {
+            this.questions = response.data.data.map((e) => {
               return {
                 id: e.id,
                 questionText: e.text,
@@ -138,6 +131,7 @@
   .questions > .columns {
     min-height: 25vh;
   }
+
   .slide-enter-active {
     animation: fade-in 300ms
   }
