@@ -4,7 +4,7 @@ import Questions from './components/Questions';
 import Start from './components/Start';
 import Login from './components/Login';
 import Signup from './components/Signup';
-import Status from './components/Status';
+import Status from './components/Status/Status';
 
 Vue.use(Router);
 

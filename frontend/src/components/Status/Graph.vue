@@ -70,7 +70,7 @@
 </script>
 
 <style lang="scss">
-  @import '../sass/base';
+  @import '../../sass/base';
   .bar {
     fill: $primary;
 

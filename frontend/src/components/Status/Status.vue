@@ -4,12 +4,10 @@
 
       <div class="column" v-if="results">
         <profile :type="topScore()" />
-        <scores :results="results"/>
       </div>
       <div class="column" v-else>
         <h1 class="title">Du mangler at udfylde spørgeskemaet!</h1>
         <h2 class="subtitle">Vi kan ikke klassificere dig uden dine besvarelser</h2>
-
         <h2 class="subtitle">
           <router-link to="/questions" class="button is-primary">Start!</router-link>
         </h2>
@@ -23,7 +21,7 @@
 </template>
 
 <script>
-  import {getUrl, URLS} from "../api/api";
+  import {getUrl, URLS} from "../../api/api";
   import Scores from "./Scores";
   import Graph from "./Graph";
   import Profile from "./Profiles";
