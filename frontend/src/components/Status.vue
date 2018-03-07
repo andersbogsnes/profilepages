@@ -2,20 +2,21 @@
   <div class="container">
     <div class="columns">
 
-      <div class="column">
-        <scores v-if="results" :results="results"/>
-        <div v-else>
-          <h1 class="title">Du mangler at udfylde spørgeskemaet!</h1>
-          <h2 class="subtitle">Vi kan ikke klassificere dig uden dine besvarelser</h2>
+      <div class="column" v-if="results">
+        <profile :type="topScore()" />
+        <scores :results="results"/>
+      </div>
+      <div class="column" v-else>
+        <h1 class="title">Du mangler at udfylde spørgeskemaet!</h1>
+        <h2 class="subtitle">Vi kan ikke klassificere dig uden dine besvarelser</h2>
 
-          <h2 class="subtitle">
-            <router-link to="/questions" class="button is-primary">Start!</router-link>
-          </h2>
-        </div>
+        <h2 class="subtitle">
+          <router-link to="/questions" class="button is-primary">Start!</router-link>
+        </h2>
       </div>
 
       <div class="column">
-        <graph2 :graphData="results" :height="height" :width="width" v-if="results"/>
+        <graph :graphData="results" :base_height="height" :base_width="width" v-if="results"/>
       </div>
     </div>
   </div>
@@ -25,19 +26,26 @@
   import {getUrl, URLS} from "../api/api";
   import Scores from "./Scores";
   import Graph from "./Graph";
-  import Graph2 from "./Graph2";
+  import Profile from "./Profiles";
+
   export default {
     name: "status",
     components: {
       'scores': Scores,
       'graph': Graph,
-      'graph2': Graph2
+      'profile': Profile
     },
     data() {
       return {
         results: undefined,
-        height: 480,
-        width: 640
+        height: 240,
+        width: 480
+      }
+    },
+    methods: {
+      topScore() {
+        const maxVal = Math.max(...this.results.map(o => o.percentScore));
+        return this.results.find(o => o.percentScore === maxVal).profileName
       }
     },
 
