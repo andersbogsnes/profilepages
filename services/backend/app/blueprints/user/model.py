@@ -2,7 +2,7 @@ import datetime
 
 import jwt
 from sqlalchemy.exc import IntegrityError
-
+from marshmallow import fields, Schema, post_load, validate, ValidationError
 from app.config import current_config
 from app.extensions import db, bcrypt
 
@@ -51,20 +51,18 @@ class User(db.Model):
         except jwt.InvalidTokenError:
             return 'Invalid token. Please try again'
 
-    @classmethod
-    def new_user(cls, data):
-        user = User(**data)
-        try:
-            db.session.add(user)
-            db.session.commit()
-            return user
-        except IntegrityError as e:
-            return None
 
-    def to_json(self):
-        return {
-            "id": self.id,
-            "user_name": self.user_name,
-            "email": self.email,
-            "initials": self.initials
-        }
+class UserSchema(Schema):
+    id = fields.Integer(dump_only=True)
+    user_name = fields.String(required=True, validate=validate.Length(min=1, error='Må ikke være blank'))
+    email = fields.Email(required=True)
+    initials = fields.String(required=True, validate=validate.Length(min=1, error='Må ikke være blank'))
+    password = fields.String(required=True, load_only=True, validate=validate.Length(min=1, error='Må ikke være blank'))
+
+    @post_load
+    def create_user(self, data):
+        return User(**data)
+
+
+login_schema = UserSchema(only=('email', 'password'))
+user_schema = UserSchema()

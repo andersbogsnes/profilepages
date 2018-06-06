@@ -1,6 +1,7 @@
 from flask import request, jsonify, Blueprint
+from marshmallow import ValidationError
 
-from app.blueprints.user.model import User
+from app.blueprints.user.model import User, user_schema, login_schema
 from app.blueprints.auth.utils import authenticate
 
 users = Blueprint('users', __name__)
@@ -15,7 +16,14 @@ def create_user():
     }
 
     user_data = request.get_json()
-    user = User.new_user(user_data)
+    try:
+        user = user_schema.load(user_data)
+    except ValidationError as err:
+        message["data"] = err.messages
+        return jsonify(message), 403
+
+    user = User.query.filter_by(email=user[])
+
     if user:
         message["status"] = "success"
         message["message"] = "User created"
