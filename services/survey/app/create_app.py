@@ -17,17 +17,13 @@ def create_app(config=ProdConfig):
     cors.init_app(app)
     bcrypt.init_app(app)
 
+    db.create_all(app=app)
     app.register_blueprint(survey)
     app.register_blueprint(users)
     app.register_blueprint(auth)
 
     register_shell_context(app)
     register_commands(app)
-
-    @app.route('/')
-    def index():
-        return render_template('index.html')
-
     return app
 
 

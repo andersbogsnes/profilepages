@@ -5,7 +5,7 @@ from app.config import configs
 from app.blueprints.survey.model import Question, Profiles, Params
 
 
-@pytest.fixture(name="app", scope='session')
+@pytest.fixture(name="app", scope="session")
 def _app():
     config = configs['test']
     app = create_app(config)
@@ -15,7 +15,7 @@ def _app():
     ctx.pop()
 
 
-@pytest.fixture(scope='session')
+@pytest.fixture()
 def client(app):
     return app.test_client()
 

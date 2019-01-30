@@ -1,0 +1,50 @@
+version: '3.4'
+
+services:
+  client:
+    container_name: client
+    build:
+      context: ./services/client
+      dockerfile: Dockerfile-prod
+    ports:
+      - '3007:80'
+    depends_on:
+      - survey
+
+  survey:
+    container_name: survey
+    environment:
+      - 'DATABASE_URL=postgres://postgres:postgres@survey_db:5432/profilepage'
+      - 'DATABASE_TEST_URL=postgres://postgres:postgres@survey_db:5432/profilepage_test'
+      - 'SECRET_KEY=${SECRET_KEY}'
+    build:
+      context: ./services/survey
+      dockerfile: Dockerfile-prod
+    expose:
+      - '5000'
+    depends_on:
+      - survey_db
+
+  survey_db:
+    container_name: survey_db
+    build:
+      context: ./services/survey/db
+      dockerfile: Dockerfile
+    ports:
+      - '5435:5432'
+    environment:
+      - POSTGRES_USER=postgres
+      - POSTGRES_PASSWORD=postgres
+
+  nginx:
+    container_name: nginx
+    build:
+      context: ./services/nginx
+      dockerfile: Dockerfile-prod
+    restart: always
+    ports:
+      - '80:80'
+    depends_on:
+      - client
+      - survey
+

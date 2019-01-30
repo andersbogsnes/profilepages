@@ -8,10 +8,12 @@ from app.extensions import db, bcrypt
 
 
 class User(db.Model):
+    __tablename__ = 'users'
+
     id = db.Column(db.Integer, primary_key=True)
-    user_name = db.Column(db.Text, unique=True)
+    user_name = db.Column(db.Text)
     email = db.Column(db.Text, unique=True)
-    initials = db.Column(db.Text, unique=True)
+    initials = db.Column(db.Text)
     password = db.Column(db.Binary(128))
 
     answers = db.relationship('Answers', backref='user', cascade="all")
@@ -41,6 +43,18 @@ class User(db.Model):
             algorithm='HS256'
         )
 
+    @classmethod
+    def create_user(cls, **kwargs):
+        new_user = cls(user_name=kwargs.pop('user_name'),
+                       email=kwargs.pop('email'),
+                       initials=kwargs.pop('initials'),
+                       password=kwargs.pop('password')
+                       )
+        db.session.add(new_user)
+        db.session.commit()
+        return new_user
+
+
     @staticmethod
     def decode_token(token):
         try:
@@ -58,10 +72,6 @@ class UserSchema(Schema):
     email = fields.Email(required=True)
     initials = fields.String(required=True, validate=validate.Length(min=1, error='Må ikke være blank'))
     password = fields.String(required=True, load_only=True, validate=validate.Length(min=1, error='Må ikke være blank'))
-
-    @post_load
-    def create_user(self, data):
-        return User(**data)
 
 
 login_schema = UserSchema(only=('email', 'password'))

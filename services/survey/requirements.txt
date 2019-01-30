@@ -1,5 +1,5 @@
 click==6.7
-Flask==0.12.2
+Flask==1.0.2
 itsdangerous==0.24
 Jinja2==2.10
 MarkupSafe==1.0
@@ -7,4 +7,11 @@ Werkzeug==0.14.1
 psycopg2-binary==2.7.4
 pandas==0.22.0
 pytest==3.4.1
-marshmallow==2.15.0
+marshmallow==3.0.0b11
+gunicorn==19.8.1
+python-dotenv==0.8.2
+flask-sqlalchemy==2.3.2
+flask-cors==3.0.4
+flask-bcrypt==0.7.1
+pyjwt==1.6.4
+ipdb

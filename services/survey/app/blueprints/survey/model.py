@@ -9,6 +9,8 @@ from app.extensions import db
 
 
 class Question(db.Model):
+    __tablename__ = 'question'
+
     id = db.Column(db.Integer, primary_key=True)
     text = db.Column(db.Text)
 
@@ -31,9 +33,11 @@ class Question(db.Model):
 
 
 class Answers(db.Model):
+    __tablename__ = 'answers'
+
     id = db.Column(db.Integer, primary_key=True)
     question_id = db.Column(db.Integer, db.ForeignKey('question.id'))
-    user_id = db.Column(db.Integer, db.ForeignKey('user.id'))
+    user_id = db.Column(db.Integer, db.ForeignKey('users.id'))
     answer = db.Column(db.Integer)
     version = db.Column(db.Integer, default=0)
     date_answered = db.Column(db.DateTime, default=datetime.datetime.now())
@@ -67,8 +71,10 @@ class Answers(db.Model):
 
 
 class Result(db.Model):
+    __tablename__ = 'result'
+
     id = db.Column(db.Integer, primary_key=True)
-    user_id = db.Column(db.Integer, db.ForeignKey('user.id'))
+    user_id = db.Column(db.Integer, db.ForeignKey('users.id'))
     profile_id = db.Column(db.Integer, db.ForeignKey('profiles.id'))
     percent_score = db.Column(db.Float)
     version = db.Column(db.Integer, default=0)
@@ -103,6 +109,8 @@ class Result(db.Model):
 
 
 class Profiles(db.Model):
+    __tablename__ = 'profiles'
+
     id = db.Column(db.Integer, primary_key=True)
     type_name = db.Column(db.Text)
     intercept = db.Column(db.Float)
@@ -123,6 +131,8 @@ class Profiles(db.Model):
 
 
 class Params(db.Model):
+    __tablename__ = 'params'
+
     id = db.Column(db.Integer, primary_key=True)
     question_id = db.Column(db.Integer, db.ForeignKey('question.id'))
     profile_id = db.Column(db.Integer, db.ForeignKey('profiles.id'))

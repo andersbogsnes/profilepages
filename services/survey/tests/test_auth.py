@@ -3,13 +3,12 @@ import pytest
 import time
 from tests.test_base import TestBase
 
-
 @pytest.mark.usefixtures('session')
 class TestAuth(TestBase):
     def test_signup_works_correctly(self, client):
         resp = client.post('/user', data=json.dumps(self.user), content_type="application/json")
-        assert 200 == resp.status_code
         data = json.loads(resp.data)
+        assert 200 == resp.status_code
         assert "User created" == data["message"]
         assert "success" == data["status"]
 
@@ -29,7 +28,7 @@ class TestAuth(TestBase):
         assert "Invalid email" == data["message"]
 
     @pytest.mark.xfail
-    def test_signup_invalid_user_fails_correctly(self, client):
+    def test_signup_invalid_user_fails_correctly(self, client, db):
         wrong_user = {
             "email": "test@test.com",
             "initials": "abcd",
@@ -42,7 +41,7 @@ class TestAuth(TestBase):
         assert "error" == data["status"]
         assert "Invalid Username" == data["message"]
 
-    def test_signup_twice_same_user_fails_correctly(self, client):
+    def test_signup_twice_same_user_fails_correctly(self, client, db):
         resp = self.signup_user(client)
         assert 200 == resp.status_code
         data = json.loads(resp.data)
@@ -55,7 +54,7 @@ class TestAuth(TestBase):
         assert "error" == data["status"]
         assert "User already exists" == data["message"]
 
-    def test_login_works_correctly(self, client):
+    def test_login_works_correctly(self, client, db):
         self.signup_user(client)
         login_user_info = {
             "email": self.user["email"],
@@ -71,7 +70,7 @@ class TestAuth(TestBase):
         assert self.user["initials"] == data["data"]["initials"]
         assert data["data"]["auth"]
 
-    def test_login_fails_correctly_with_invalid_user(self, client):
+    def test_login_fails_correctly_with_invalid_user(self, client, db):
         resp = client.post('/auth/login',
                            data=json.dumps(self.user),
                            content_type='application/json')
@@ -80,7 +79,7 @@ class TestAuth(TestBase):
         assert "User doesn't exist" == data['message']
         assert "error" == data["status"]
 
-    def test_login_gives_different_token_when_already_logged_in(self, client):
+    def test_login_gives_different_token_when_already_logged_in(self, client, db):
         resp = self.login_user(client)
         old_token = json.loads(resp.data)["data"]["auth"]
 
@@ -94,7 +93,7 @@ class TestAuth(TestBase):
         data = json.loads(resp.data)
         assert old_token != data["data"]["auth"]
 
-    def test_get_user_returns_correctly(self, client):
+    def test_get_user_returns_correctly(self, client, db):
         token = self.get_token(client)
         resp = client.get('/user', headers={"Authorization": f"Bearer {token}"})
 
@@ -106,7 +105,7 @@ class TestAuth(TestBase):
         assert self.user["email"] == data["data"]["email"]
         assert self.user["initials"] == data["data"]["initials"]
 
-    def test_get_user_returns_failure_without_token(self, client):
+    def test_get_user_returns_failure_without_token(self, client, db):
         resp = client.get('/user')
         assert 401 == resp.status_code
         data = json.loads(resp.data)

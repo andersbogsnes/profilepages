@@ -1,5 +1,5 @@
 from flask import request, jsonify, Blueprint
-from app.blueprints.user.model import User
+from app.blueprints.user.model import User, login_schema
 
 auth = Blueprint('auth', __name__, url_prefix='/auth')
 
@@ -22,7 +22,7 @@ def login():
         if auth_token:
             message["status"] = "success"
             message["message"] = "Logged in successfully"
-            message["data"] = user.to_json()
+            message["data"]["user"] = login_schema.dumps(user)
             message["data"]["auth"] = auth_token.decode()
             return jsonify(message), 200
     else:

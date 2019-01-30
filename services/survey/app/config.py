@@ -2,14 +2,11 @@ import datetime
 import os
 
 import pathlib
-from dotenv import find_dotenv, load_dotenv
-
-load_dotenv(find_dotenv())
 
 
 class Config:
     BASE_PATH = pathlib.Path(__file__).parent
-    SQLALCHEMY_DATABASE_URI = os.getenv('DB_HOST')
+    SQLALCHEMY_DATABASE_URI = os.getenv('DATABASE_URL')
     SQLALCHEMY_TRACK_MODIFICATIONS = False
     JWT_EXPIRY = datetime.timedelta(days=5)
     BCRYPT_LOG_ROUNDS = 12
@@ -30,7 +27,7 @@ class ProdConfig(Config):
 
 class TestConfig(Config):
     TESTING = True
-    SQLALCHEMY_DATABASE_URI = os.getenv('DB_TEST_HOST')
+    SQLALCHEMY_DATABASE_URI = os.getenv('DATABASE_TEST_URL')
     SECRET_KEY = 'mysupersecretkey'
     BCRYPT_LOG_ROUNDS = 4
 

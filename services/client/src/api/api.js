@@ -1,5 +1,4 @@
 import axios from 'axios';
-const baseURL = 'http://127.0.0.1:5000';
 
 export const URLS = {
   login: '/auth/login',
@@ -9,9 +8,7 @@ export const URLS = {
   user: '/user'
 };
 
-export const HTTP = axios.create({
-  baseURL
-});
+export const HTTP = axios.create();
 
 export const getUrl = (url) => {
   const token = window.localStorage.getItem('token') || '';
